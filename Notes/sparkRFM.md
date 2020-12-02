@@ -38,9 +38,27 @@ Basically, pyspark.sql.types imported functions are used to declared schemas; py
 
 ### Reading data
 
-First of all, it is necessary to explore the file system where data was loaded, to do so, lets list the file store.
+First of all, it is necessary to explore the file system, where data was loaded. To do so, lets list the file store.
 
     display(dbutils.fs.ls("FileStore/tables"))
+
+The result most be something like
+
+<img alt="fileStore" title="File Store" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/fileStore.png"/>
+
+To know how to read the files, it is important to make a small visualization, to do so, it is possible to manipulates the Databricks filesystem (DBFS) from the console using the `%fs` shorthand or using the module dbutils.fs, you can learn more [here](https://docs.databricks.com/_static/notebooks/dbutils.html).
+
+To exemplify, lets use the `%fs` shorthand.
+
+    %fs head FileStore/tables/Features_data_set.csv
+
+whith output:
+
+<img alt="csvHead" title="csv head" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/csvHead.png"/>
+
+and repeat this process with all the other files.
+
+Once we observed that if the files are comma separated or if they have headers, we proceed to infer the schema.
 
 ### Joning data
 
