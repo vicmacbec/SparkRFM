@@ -86,7 +86,7 @@ It is notable that the schema was not correctly inferred. The method `printSchem
 
     features.printSchema()
 
-<img alt="csvHeadprintShema" title="Print Shema" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/InferedSchema.png"/>
+<img alt="printSchema" title="Print Schema" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/printShema.png"/>
 
 Now, we confirm how the shcema was not correctly inferred. The features Date, MarkDown*, CPI and Unemployment are incorrectly inferred so the schema now is declared. 
 
@@ -118,7 +118,7 @@ As work with dates in Spark is a little complicated, the date was declared as st
 
     display(features2)
 
-<img alt="declaredSchema" title="Declared Schema" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/InferedSchema.png"/>
+<img alt="declaredSchema" title="Declared Schema" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/declaredSchema.png"/>
 
 Changind the type of the column Date
 
@@ -126,13 +126,13 @@ Changind the type of the column Date
 
     features3.printSchema()
 
-<img alt="declaredSchema2" title="Declared Schema 2" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/InferedSchema.png"/>
+<img alt="declaredSchema2" title="Declared Schema 2" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/declaredSchema2.png"/>
 
 As it is remarkable, the types and the values of each column now are correclty. This process most also be repeated with the files sales and stores, to get the following dataframes:
 
-<img alt="sales" title="Sales" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/InferedSchema.png"/>
+<img alt="sales" title="Sales" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/sales.png"/>
 
-<img alt="stores" title="Stores" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/InferedSchema.png"/>
+<img alt="stores" title="Stores" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/stores.png"/>
 
 
 
