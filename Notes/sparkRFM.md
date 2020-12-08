@@ -80,6 +80,66 @@ Once we observed that if the files are comma separated or if they have headers, 
 
 As you can see, read a file is so easy. With the `display` command, you can see the content of the read file.
 
+<img alt="InferedSchema" title="Infered Schema" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/InferedSchema.png"/>
+
+It is notable that the schema was not correctly inferred. The method `printSchema()` allow see the type of each column.
+
+    features.printSchema()
+
+<img alt="csvHeadprintShema" title="Print Shema" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/InferedSchema.png"/>
+
+Now, we confirm how the shcema was not correctly inferred. The features Date, MarkDown*, CPI and Unemployment are incorrectly inferred so the schema now is declared. 
+
+To do so, let's say to Spark the correct type of each column and  read the file again in a new variable (it is important because the variables in Saprk are immutable).
+
+As work with dates in Spark is a little complicated, the date was declared as string and then it will be converted as date.
+
+    featuresSchema = StructType([
+        StructField("Store", IntegerType(), True), 
+        StructField("Date", StringType(), True),
+        StructField("Temperature", DoubleType(), True),
+        StructField("Fuel_Price", DoubleType(), True),
+        StructField("MarkDown1", DoubleType(), True),
+        StructField("MarkDown2", DoubleType(), True),
+        StructField("MarkDown3", DoubleType(), True),
+        StructField("MarkDown4", DoubleType(), True),
+        StructField("MarkDown5", DoubleType(), True),
+        StructField("CPI", DoubleType(), True),
+        StructField("Unemployment", DoubleType(), True),
+        StructField("IsHoliday", BooleanType(), True)
+    ])
+
+    features2 = (spark.read
+             .format(file_type)
+             .option("header", first_row_is_header)
+             .option("sep", delimiter)
+             .schema(featuresSchema)
+             .load(file_location))
+
+    display(features2)
+
+<img alt="declaredSchema" title="Declared Schema" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/InferedSchema.png"/>
+
+Changind the type of the column Date
+
+    features3 = features2.withColumn("Date", to_date(col("Date"),"dd/MM/yyyy"))
+
+    features3.printSchema()
+
+<img alt="declaredSchema2" title="Declared Schema 2" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/InferedSchema.png"/>
+
+As it is remarkable, the types and the values of each column now are correclty. This process most also be repeated with the files sales and stores, to get the following dataframes:
+
+<img alt="sales" title="Sales" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/InferedSchema.png"/>
+
+<img alt="stores" title="Stores" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/InferedSchema.png"/>
+
+
+
+features3.count() 8190
+sales3.count() 421570
+stores.count() 45
+
 ### Joning data
 
 ## Quick data exploration
