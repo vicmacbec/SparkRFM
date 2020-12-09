@@ -34,7 +34,7 @@ The functions that will be used are:
     from pyspark.sql.types import StructType, StructField, IntegerType, StringType, ArrayType, FloatType, BooleanType, DoubleType, DateType  
     from pyspark.sql.functions import to_date, col, datediff, lit
 
-Basically, pyspark.sql.types imported functions are used to declared schemas; pyspark.sql.types imported functions are used to easilly operate with the features; and pyspark.sql.functions is to easily use descriptive functions.
+Basically, `pyspark.sql.types` imported functions are used to declared schemas; `pyspark.sql.types` imported functions are used to easilly operate with the features; and `pyspark.sql.functions` is to easily use descriptive functions.
 
 ### Reading data
 
@@ -78,7 +78,7 @@ Once we observed that if the files are comma separated or if they have headers, 
 
     display(features)
 
-As you can see, read a file is so easy. With the `display` command, you can see the content of the read file.
+As you can see, read a file is so easy. With the `display()` function, you can see the content of the read file.
 
 <img alt="InferedSchema" title="Infered Schema" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/InferedSchema.png"/>
 
@@ -88,9 +88,9 @@ It is notable that the schema was not correctly inferred. The method `printSchem
 
 <img alt="printSchema" title="Print Schema" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/printShema.png"/>
 
-Now, we confirm how the shcema was not correctly inferred. The features Date, MarkDown*, CPI and Unemployment are incorrectly inferred so the schema now is declared. 
+Now, we confirm how the shcema was not correctly inferred. The features *Date*, *MarkDown**, *CPI* and *Unemployment* are incorrectly inferred so the schema now is declared. 
 
-To do so, let's say to Spark the correct type of each column and  read the file again in a new variable (it is important because the variables in Saprk are immutable).
+To do so, let's say to Spark the correct type of each column and read the file again in a new variable (it is important because the variables in Saprk are immutable).
 
 As work with dates in Spark is a little complicated, the date was declared as string and then it will be converted as date.
 
@@ -120,7 +120,7 @@ As work with dates in Spark is a little complicated, the date was declared as st
 
 <img alt="declaredSchema" title="Declared Schema" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/declaredSchema.png"/>
 
-Changind the type of the column Date
+Changing the type of the column *Date*:
 
     features3 = features2.withColumn("Date", to_date(col("Date"),"dd/MM/yyyy"))
 
@@ -128,23 +128,52 @@ Changind the type of the column Date
 
 <img alt="declaredSchema2" title="Declared Schema 2" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/declaredSchema2.png"/>
 
-As it is remarkable, the types and the values of each column now are correclty. This process most also be repeated with the files sales and stores, to get the following dataframes:
+As it is remarkable, the types and the values of each column now are correclty. This process most also be repeated with the files **sales** and **stores**, to get the following dataframes:
 
 <img alt="sales" title="Sales" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/sales.png"/>
 
 <img alt="stores" title="Stores" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/stores.png"/>
 
+Finally, it is for interest know the number of registers of each table with the following commands:
 
+    features3.count()
+    sales3.count()
+    stores.count()
 
-features3.count() 8190
-sales3.count() 421570
-stores.count() 45
+They gives 8190, 421570 and 45 registers respectively.
 
-### Joning data
+### Joinning dataframes
+
+Now, lets join our three dataframes. First, take the **features3** and **sales3** dataframes and full join them on *Store*, *Date* and *IsHoliday* columns; and the result be full joined with **stores** dataframe on *Stores* column.
+
+    featuresSales = features3.join(sales3, on=['Store','Date','IsHoliday'], how='full')
+    featuresSalesStores = featuresSales.join(stores, on=['Store'], how='full')
+
+Remember to use the `display()` function to see if the result is what you expected. On this time, it is.
+
+<img alt="dfJoined" title="DF Joined" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/dfJoined.png"/>
+
+Given the counts of the records in the *features3* (8,190) and *sales3* (421,570) tables, it is observed that joining these tables yields (423,325) records, which indicates that there are records in each table that do not have the id corresponding to each other.
 
 ## Quick data exploration
 
-## RFM Analysis
+To make an quick data exploration, lets summarise the data using the *describe()* method.
+
+    featuresSalesStores.describe().display()
+
+<img alt="describe" title="Describe" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/describe.png"/>
+
+In order to do not make this article so extensive, lets do the RFM analysis. In other 
+one we can have fun making an EDA.
+
+## RFM Analysis (Recency, Frequency, Monetary)
+
+First, lets select the necessary features:
+- Store
+- Date
+- Weekly_Sales
+
+Then, lets drop na's and group by Date and Store making the Weekly_Sales sum.
 
 ### Recency
 
