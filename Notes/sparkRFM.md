@@ -214,11 +214,11 @@ Obtaining the difference between the global maximum date and the maximum date of
 
 The frequency of purchases that occurred in the given period is obtained. In this case, it is observed how all the stores had sales every day.
 
-f = (RFM0
-    .groupby(['Store'])
-    .count()
-    .withColumn('Frequency',col('count'))
-    )
+    f = (RFM0
+        .groupby(['Store'])
+        .count()
+        .withColumn('Frequency',col('count'))
+        )
 
 <img alt="Frequency" title="F" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/F.png"/>
 
@@ -226,11 +226,11 @@ f = (RFM0
 
 Getting weekly sales for each store:
 
-m = (RFM0
-    .groupby('Store')
-    .agg(sf.sum('Weekly_Sales').alias('Monetary'))
-    .withColumn('Monetary', sf.round(col('Monetary'), 2))
-    )
+    m = (RFM0
+        .groupby('Store')
+        .agg(sf.sum('Weekly_Sales').alias('Monetary'))
+        .withColumn('Monetary', sf.round(col('Monetary'), 2))
+        )
 
 <img alt="Monetary" title="M" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/M.png"/>
 
