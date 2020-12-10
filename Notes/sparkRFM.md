@@ -1,4 +1,7 @@
 # A quick RFM Analysis on Spark
+## First steps using Spark
+
+## RFM introduction
 
 RFM analysis is a common customers scan in retail and is generally used to create customer groups. RFM is the acronym of Recency, Frequency and Monetary.
 
@@ -163,8 +166,7 @@ To make an quick data exploration, lets summarise the data using the *describe()
 
 <img alt="describe" title="Describe" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/describe.png"/>
 
-In order to do not make this article so extensive, lets do the RFM analysis. In other 
-one we can have fun making an EDA.
+In order to do not make this article so extensive, lets pass to the RFM analysis. In other article we can have fun making an EDA.
 
 ## RFM Analysis (Recency, Frequency, Monetary)
 
@@ -175,14 +177,98 @@ First, lets select the necessary features:
 
 Then, lets drop na's and group by Date and Store making the Weekly_Sales sum.
 
+    RFM0 = (featuresSalesStores
+       .select('Store', 'Date', 'Weekly_Sales')
+       .dropna('any')
+       .groupby(['Store','Date'])
+       .agg(sf.sum('Weekly_Sales').alias('Weekly_Sales'))
+       .withColumn('Weekly_Sales', sf.round(col('Weekly_Sales'), 2))
+       )
+
+<img alt="RFM" title="RFM" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/RFM.png"/>
+
 ### Recency
+
+First, lets take the last date reported, which is *2012-10-06*.
+
+    max_date = RFM0.agg(sf.max('Date'))
+
+    maxDate = max_date.groupBy('max(Date)').max().collect()[0]
+
+Then the last date recorded by each store is reviewed. In this case, it is observed that all stores have bought on the same date as the global maximum date.
+
+    storesMaxDate = RFM0.groupby(['Store']).agg(sf.max('Date'))
+
+<img alt="Recency dates" title="Recency dates" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/Rdates.png"/>
+
+Obtaining the difference between the global maximum date and the maximum date of each store:
+
+    r = (RFM0
+     .join(storesMaxDate, on = 'Store')
+     .withColumn('Recency', datediff(to_date(lit(maxDate[0])), col('max(Date)')))
+    )
+
+<img alt="Recency" title="R" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/R.png"/>    
 
 ### Frequency
 
+The frequency of purchases that occurred in the given period is obtained. In this case, it is observed how all the stores had sales every day.
+
+f = (RFM0
+    .groupby(['Store'])
+    .count()
+    .withColumn('Frequency',col('count'))
+    )
+
+<img alt="Frequency" title="F" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/F.png"/>
+
 ### Monetary
+
+Getting weekly sales for each store:
+
+m = (RFM0
+    .groupby('Store')
+    .agg(sf.sum('Weekly_Sales').alias('Monetary'))
+    .withColumn('Monetary', sf.round(col('Monetary'), 2))
+    )
+
+<img alt="Monetary" title="M" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/M.png"/>
+
+### RFM
+
+Joining r, f, m DataFrames with all the stores.
+
+    RFM1 = (r.select('Store', 'Recency').distinct()
+       .join(f.select('Store', 'Frequency'), on = 'Store')
+       .join(m, on = 'Store')
+       )
+
+<img alt="RFM" title="RFM" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/RFM2.png"/>
+
+#### Saving data
+
+Finally, we are going to save the information in parquet format, since it is the best compression and reading option for future occasions.
+
+Lets save it on the same path were we save the retail data.
+
+    workingDir = "FileStore/tables"
+    targetPath = f"{workingDir}/RFM"
+
+    RFM1.write.mode("OVERWRITE").parquet(targetPath)
+
+    display(dbutils.fs.ls(targetPath))
+
+<img alt="Parquet" title="Parquet" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/parquet.png"/>
 
 ## Conclusions
 
+On this article, we learn:
+- to import data to spark, 
+- to read files,
+- to make some transformation to the data
+- to do an RFM analysis
+- to save data.
+
 ### Future steps
 
-- Create groups of the customers using an ML algorithm like K-means or PAM.
+- Create customers groups using an Machine Learning algorithm like K-means or PAM using the RFM analysis.
