@@ -7,15 +7,15 @@ RFM analysis is a common customers scan in retail and is generally used to creat
 
 Recency, is usually the number of days since the customer make the last purchase. 
 
-<Image>
+<img alt="Recency" title="Recency" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/Recency.png"/>
 
-Frequency is the number of times that a customer make a purchase in a period of time (it could be since the first and the last purchase). 
+Frequency is the number of times that a customer make a purchase in a period of time. 
 
-<Image>
+<img alt="Frequency" title="Frequency" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/Frequency.png"/>
 
 And Monetary stands for the mount of money that the customer spends on your product.
 
-<Image>
+<img alt="Monetary" title="Monetary" style="vertical-align: text-bottom; position: relative;" src="https://raw.githubusercontent.com/vicmacbec/SparkRFM/main/Images/Monetary.png"/>
 
 Usually, retail volume data is huge and is hard to process it. Spark is an open-source distributed general-purpose cluster-computing framework and is the perfect tool to handle big data.
 
